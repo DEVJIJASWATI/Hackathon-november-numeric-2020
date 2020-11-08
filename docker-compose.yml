@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+    db:
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_DB: hackathon
+            POSTGRES_USER: admindev
+            POSTGRES_PASSWORD: admindev
+            PGDATA: /var/lib/postgresql/data
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+ 
+    pgadmin:
+        image: dpage/pgadmin4
+        restart: always
+        environment:
+            PGADMIN_DEFAULT_EMAIL: hackathon@admin.dev
+            PGADMIN_DEFAULT_PASSWORD: admindev007
+            PGADMIN_LISTEN_PORT: 80
+        ports:
+            - "8080:80"
+        volumes:
+            - pgadmin-data:/var/lib/pgadmin
+        links:
+            - "db:pgsql-server"
+    
+    strapi:
+        image: strapi/strapi
+        environment: 
+            DATABASE_CLIENT: postgres
+            DATABASE_NAME: hackathon
+            DATABASE_HOST:  postgres
+            DATABASE_PORT:  5432
+            DATABASE_USERNAME:  admindev
+            DATABASE_PASSWORD:  admindev
+        links: 
+            -   postgres:postgres
+        volumes: 
+            -   ./app:/srv/app
+        ports: 
+            -   '1337:1337'
+                                
+volumes:
+    db-data:
+    pgadmin-data:
